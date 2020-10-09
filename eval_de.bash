@@ -1,11 +1,13 @@
 #! /bin/bash
 
-lang=fr
-detok='/home/barrault/git/mosesdecoder/scripts/tokenizer/detokenizer.perl -q '
-mbleu='/home/barrault/git/mosesdecoder/scripts/generic/multi-bleu.perl '
-data_dir='/home/barrault/projects/allies/allies_llmt_data/en-fr/en-fr/fr'
+dir='/home/ac1lmb/git/allies_llmt_eval'
+
+lang=de
+detok='$dir/detokenizer.perl -q '
+mbleu='$dir/multi-bleu.perl '
+data_dir='/home/ac1lmb/git/allies_llmt_data/en-$lang/en-$lang/$lang'
 ref_dir='reference'
-file_order='/home/barrault/projects/allies/allies_llmt_eval/allies.nt14.file_order'
+file_order='/home/barrault/projects/allies/allies_llmt_eval/allies.nt14.en-de.de.file_order'
 
 if [[ $# -lt 1 ]]; then
   echo "Usage: $0 <experiment directory name> "
@@ -72,7 +74,7 @@ do
     cat $dir.detok/$f >> $dir.all.sacrebleu.txt
   done
 # score it with sacrebleu
-  sacrebleu -t wmt14 -l en-fr -i $dir.all.sacrebleu.txt > results.$dir.all.sacrebleu
+  sacrebleu -t wmt14 -l en-$lang -i $dir.all.sacrebleu.txt > results.$dir.all.sacrebleu
 done
 
 mkdir $1
