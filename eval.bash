@@ -2,15 +2,17 @@
 
 dir='/home/ac1lmb/git/allies_llmt_eval'
 
-lang=de
-detok='$dir/detokenizer.perl -q '
-mbleu='$dir/multi-bleu.perl '
-data_dir='/home/ac1lmb/git/allies_llmt_data/en-$lang/en-$lang/$lang'
+src=en # for now only en
+trg=$1 # fr or de
+output_dir=$2
+detok="$dir/detokenizer.perl -q "
+mbleu="$dir/multi-bleu.perl "
+data_dir="/home/ac1lmb/git/allies_llmt_data/$src-$trg/$src-$trg/$trg"
 ref_dir='reference'
-file_order='/home/barrault/projects/allies/allies_llmt_eval/allies.nt14.en-de.de.file_order'
+file_order="/home/barrault/projects/allies/allies_llmt_eval/allies.nt14.$src-$trg.$trg.file_order"
 
 if [[ $# -lt 1 ]]; then
-  echo "Usage: $0 <experiment directory name> "
+  echo "Usage: $0 <target language (fr or de)> <output experiment directory name> "
   exit
 fi
 
@@ -44,7 +46,7 @@ do
   for f in `ls $dir`
   do
     echo $f
-    sed -r 's/(@@ )|(@@ ?$)//g' < $dir/$f | $detok -l $lang > $dir.detok/$f
+    sed -r 's/(@@ )|(@@ ?$)//g' < $dir/$f | $detok -l $trg > $dir.detok/$f
   done
 done
 
@@ -74,11 +76,9 @@ do
     cat $dir.detok/$f >> $dir.all.sacrebleu.txt
   done
 # score it with sacrebleu
-  sacrebleu -t wmt14 -l en-$lang -i $dir.all.sacrebleu.txt > results.$dir.all.sacrebleu
+  sacrebleu -t wmt14 -l $src-$trg -i $dir.all.sacrebleu.txt > results.$dir.all.sacrebleu
 done
 
-mkdir $1
-mv original* adapted* results* $ref_dir.all.txt $1
-
-
+mkdir $output_dir
+mv original* adapted* results* $ref_dir.all.txt $output_dir
 
